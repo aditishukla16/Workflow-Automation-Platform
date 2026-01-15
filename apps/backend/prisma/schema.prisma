@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  title       String
+  userId      String
+  nodes       Json
+  connections Json
+  enabled     Boolean  @default(true)
+  trigger     Trigger?
+  actions     Action[]
+  edges       Edge[]
+
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Trigger {
+  id                 String @id @default(uuid())
+  workflowId         String @unique
+  availableTriggerId String
+  metadata           Json
+  positionX          Int
+  positionY          Int
+
+  workflow         Workflow         @relation(fields: [workflowId], references: [id])
+  availableTrigger AvailableTrigger @relation(fields: [availableTriggerId], references: [id])
+
+
+
+
+}
+model AvailableTrigger {
+  id        String   @id @default(uuid())
+  type      String   // WEBHOOK, CRON, BINANCE, etc.
+  name      String   // Human readable name
+  icon      String?
+  createdAt DateTime @default(now())
+
+  triggers Trigger[]
+}
+
+
+
+model Action {
+  id                String @id @default(uuid())
+  workflowId        String
+  availableActionId String
+  sortingOrder      Int
+  metadata          Json
+  positionX         Int
+  positionY         Int
+
+  workflow Workflow @relation(fields: [workflowId], references: [id])
+}
+
+model Edge {
+  id           String @id @default(uuid())
+  workflowId   String
+  sourceNodeId String
+  targetNodeId String
+
+  workflow Workflow @relation(fields: [workflowId], references: [id])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  workflows Workflow[]
+}
