@@ -58,7 +58,18 @@ model Action {
   positionY         Int
 
   workflow Workflow @relation(fields: [workflowId], references: [id])
+  availableAction  AvailableAction @relation(fields: [availableActionId], references: [id])
 }
+model AvailableAction {
+  id        String   @id @default(uuid())
+  type      String   // EMAIL, HTTP, DELAY, DB, etc.
+  name      String   // Human readable name
+  icon      String?
+  createdAt DateTime @default(now())
+
+  actions Action[]
+}
+
 
 model Edge {
   id           String @id @default(uuid())
@@ -73,7 +84,23 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
+  name      String
   createdAt DateTime @default(now())
 
   workflows Workflow[]
+  credentials Credential[]
+
 }
+model Credential {
+  id           String   @id @default(uuid())
+  userId       String
+  title        String
+  platform     String
+  credentials  Json
+  description  String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
