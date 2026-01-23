@@ -2,8 +2,7 @@ import { Router, Request, Response } from 'express';
 import {PrismaClient} from "@prisma/client"; // Make sure the correct prisma import path is used
 import { sendWorkflowForProcess } from './processWorkflow';
 import { getWorkflow } from './getWorkflow';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 const router = Router();
 
 router.post("/:userId/:workflowId", async (req: Request, res: Response) => {

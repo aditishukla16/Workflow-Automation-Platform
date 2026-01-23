@@ -5,8 +5,8 @@ import { sendWorkflowForProcess } from "./processWorkflow";
 import { getWorkflow } from "./getWorkflow";
 import { generateHtml } from "./helper/generatedHtml";
 import { IncomingEmail } from "../types/express";
+import prisma from "../lib/prisma";
 
-const prisma = new PrismaClient();
 const router = Router();
 
 /* ---------------- MEMORY ---------------- */

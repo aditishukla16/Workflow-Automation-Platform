@@ -4,8 +4,9 @@ import { getNextActionMetadata } from "./email";
 import { sendWorkflowForProcess } from "./processWorkflow";
 import { getWorkflow } from "./getWorkflow";
 import { ActionResponse } from "../types/express";
+import prisma from "../lib/prisma";
 const inputMetadat:Map<string,any> = new Map();
-const prisma = new PrismaClient();
+
 const activePollers: Map<string, { stop: () => void; isActive: boolean }> = new Map();  
 const lastUpdateIds: Map<string, number> = new Map();  
 

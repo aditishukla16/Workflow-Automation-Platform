@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import prisma from "../lib/prisma";
 
 
 //CREATE WORKFLOW
@@ -20,6 +20,7 @@ export const createWorkflow = async (req: Request, res: Response) => {
                 connections,
                 userId,
                 enabled: true,
+                status: "DRAFT",
             },
         });
         return res.status(201).json({

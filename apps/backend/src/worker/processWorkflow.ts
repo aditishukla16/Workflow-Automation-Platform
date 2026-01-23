@@ -3,8 +3,7 @@ import { ActionResponse } from "../types/express";
 import { sendMail, sendMailAndWait } from "./email";
 import { sendTelegramMessage, sendTelegramMessageAndWait } from "./telegram";
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/prisma";
 export const sendWorkflowForProcess = async ( workflow: any,inputData: any,startFromActionId?: string,execution?: ActionResponse) => {
   
    let startIndex = 0;
