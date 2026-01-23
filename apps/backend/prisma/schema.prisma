@@ -4,22 +4,51 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
 }
+
+/* ================= WORKFLOW ================= */
 
 model Workflow {
   id          String   @id @default(uuid())
+  status      String
   title       String
   userId      String
   nodes       Json
   connections Json
   enabled     Boolean  @default(true)
+
   trigger     Trigger?
   actions     Action[]
   edges       Edge[]
+  
+ 
 
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  executions  Execution[]
+
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
+
+/* ================= EXECUTION ================= */
+
+model Execution {
+  id          String   @id @default(uuid())
+
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id])
+
+  actionId    String
+  action      Action   @relation(fields: [actionId], references: [id])
+
+  pointer     String?
+  status      String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+}
+
+
+/* ================= TRIGGER ================= */
 
 model Trigger {
   id                 String @id @default(uuid())
@@ -31,22 +60,19 @@ model Trigger {
 
   workflow         Workflow         @relation(fields: [workflowId], references: [id])
   availableTrigger AvailableTrigger @relation(fields: [availableTriggerId], references: [id])
-
-
-
-
 }
+
 model AvailableTrigger {
   id        String   @id @default(uuid())
-  type      String   // WEBHOOK, CRON, BINANCE, etc.
-  name      String   // Human readable name
+  type      String
+  name      String
   icon      String?
   createdAt DateTime @default(now())
 
   triggers Trigger[]
 }
 
-
+/* ================= ACTION ================= */
 
 model Action {
   id                String @id @default(uuid())
@@ -57,19 +83,23 @@ model Action {
   positionX         Int
   positionY         Int
 
-  workflow Workflow @relation(fields: [workflowId], references: [id])
-  availableAction  AvailableAction @relation(fields: [availableActionId], references: [id])
+  workflow        Workflow        @relation(fields: [workflowId], references: [id])
+  availableAction AvailableAction @relation(fields: [availableActionId], references: [id])
+
+  executions Execution[]
 }
+
 model AvailableAction {
   id        String   @id @default(uuid())
-  type      String   // EMAIL, HTTP, DELAY, DB, etc.
-  name      String   // Human readable name
+  type      String
+  name      String
   icon      String?
   createdAt DateTime @default(now())
 
   actions Action[]
 }
 
+/* ================= EDGE ================= */
 
 model Edge {
   id           String @id @default(uuid())
@@ -80,6 +110,8 @@ model Edge {
   workflow Workflow @relation(fields: [workflowId], references: [id])
 }
 
+/* ================= USER ================= */
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -87,10 +119,10 @@ model User {
   name      String
   createdAt DateTime @default(now())
 
-  workflows Workflow[]
+  workflows   Workflow[]
   credentials Credential[]
-
 }
+
 model Credential {
   id           String   @id @default(uuid())
   userId       String
@@ -103,4 +135,3 @@ model Credential {
 
   user User @relation(fields: [userId], references: [id])
 }
-
